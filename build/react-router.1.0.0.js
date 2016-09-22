@@ -27326,12 +27326,32 @@ var router = __webpack_require__(118);
 var Router = router.Router;
 var Route = router.Route;
 var hashHistory = router.hashHistory;
+var Link = router.Link;
 
-var routes = React.createElement(
-    Router,
-    { history: hashHistory },
-    React.createElement(Route, { path: '/contacts', component: ContactListContainer })
-);
+var IndexRoute = router.IndexRoute;
+
+var App = function App(props) {
+    return React.createElement(
+        'div',
+        null,
+        React.createElement(
+            'h1',
+            null,
+            'Contacts App'
+        ),
+        React.createElement(
+            'div',
+            null,
+            props.children
+        )
+    );
+};
+
+var ContactContainer = function ContactContainer(props) {
+    var contact = CONTACTS[props.params.contactId];
+    return React.createElement(Contact, { id: contact.id, name: contact.name,
+        phoneNumber: contact.phoneNumber });
+};
 
 var CONTACTS = {
     0: {
@@ -27358,7 +27378,11 @@ var Contact = function Contact(props) {
         React.createElement(
             'strong',
             null,
-            props.name
+            React.createElement(
+                Link,
+                { to: '/contacts/' + props.id },
+                props.name
+            )
         ),
         ' ',
         props.phoneNumber
@@ -27385,6 +27409,17 @@ var ContactList = function ContactList(props) {
 var ContactListContainer = function ContactListContainer() {
     return React.createElement(ContactList, { contacts: CONTACTS });
 };
+
+var routes = React.createElement(
+    Router,
+    { history: hashHistory },
+    React.createElement(
+        Route,
+        { path: '/contacts', component: App },
+        React.createElement(IndexRoute, { component: ContactListContainer }),
+        React.createElement(Route, { path: ':contactId', component: ContactContainer })
+    )
+);
 
 document.addEventListener('DOMContentLoaded', function () {
     ReactDOM.render(routes, document.getElementById('app'));

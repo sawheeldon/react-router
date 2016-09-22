@@ -5,12 +5,28 @@ var router = require('react-router');
 var Router = router.Router;
 var Route = router.Route;
 var hashHistory = router.hashHistory;
+var Link = router.Link;
 
-var routes = (
-    <Router history={hashHistory}>
-        <Route path="/contacts" component={ContactListContainer} />
-    </Router>
-);
+var IndexRoute = router.IndexRoute;
+
+var App = function(props) {
+    return (
+        <div>
+            <h1>
+                Contacts App
+            </h1>
+            <div>
+                {props.children}
+            </div>
+        </div>
+    );
+};
+
+var ContactContainer = function(props) {
+    var contact = CONTACTS[props.params.contactId];
+    return <Contact id={contact.id} name={contact.name}
+                    phoneNumber={contact.phoneNumber} />;
+};
 
 var CONTACTS = {
     0: {
@@ -34,7 +50,9 @@ var Contact = function(props) {
     return (
         <div>
             <strong>
-                {props.name}
+                <Link to={'/contacts/' + props.id}>
+                    {props.name}
+                </Link>
             </strong>
             &nbsp;
             {props.phoneNumber}
@@ -63,6 +81,15 @@ var ContactList = function(props) {
 var ContactListContainer = function() {
     return <ContactList contacts={CONTACTS} />;
 };
+
+var routes = (
+    <Router history={hashHistory}>
+        <Route path="/contacts" component={App}>
+            <IndexRoute component={ContactListContainer} />
+            <Route path=":contactId" component={ContactContainer} />
+        </Route>
+    </Router>
+);
 
 document.addEventListener('DOMContentLoaded', function() {
     ReactDOM.render(routes, document.getElementById('app'));
